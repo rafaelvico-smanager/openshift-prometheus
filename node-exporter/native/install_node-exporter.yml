@@ -14,9 +14,7 @@
 
 # Now set up all nodes running OpenShift software with the Node Exporter
 - hosts: nodes
-  remote_user: ec2_user
-  become: yes
-  become_user: root
+  remote_user: root
   tasks:
   - name: Copy node-exporter binary to node
     copy:
