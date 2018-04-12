@@ -1,8 +1,6 @@
 ---
 - hosts: nodes
-  remote_user: ec2_user
-  become: yes
-  become_user: root
+  remote_user: root
   tasks:
   # Open Firewall Port 1936 for future sessions by adding the rule to
   # the iptables file.
