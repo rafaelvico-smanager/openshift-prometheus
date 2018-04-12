@@ -1,7 +1,7 @@
 ---
-# This Playbook sets up Prometheus on an OpenTLC Cluster
+# This Playbook sets up Prometheus
 - hosts: localhost
-  gather_facts: false
+  gather_facts: true
   tasks:
   # Find out which nodes are Infranodes and add them to a new group: infranodes
   - name: Add Infranodes to a new infranodes Group
@@ -10,7 +10,7 @@
       groups: infranodes
     with_items: "{{ groups['nodes'] }}"
     when:
-    - item | match("^infranode.*")
+    - item | match("^infra.*")
   - name: Add Masters to a new masters Group
     add_host:
       name: "{{ item }}"
@@ -20,9 +20,7 @@
     - item | match("^master.*")
 
 - hosts: infranodes[0]
-  remote_user: ec2_user
-  become: yes
-  become_user: root
+  remote_user: root
   tasks:
   # OpenShift Routers expose /metrics on port 1936. Therefore we need to open
   # the port for both future and current sessions so that Prometheus can access
@@ -68,9 +66,7 @@
 
 # Configure all Nodes (including Infranodes and Masters) for monitoring
 - hosts: nodes
-  remote_user: ec2_user
-  become: yes
-  become_user: root
+  remote_user: root
   tasks:
   # Node Exporters on all Nodes liston on port 9100.
   # Open Firewall Port 9100 for future sessions by adding the rule to
@@ -142,9 +138,7 @@
 # Finally create all the necessary OpenShift objects. This happens via the
 # oc binary on the (first) master host.
 - hosts: masters[0]
-  remote_user: ec2_user
-  become: yes
-  become_user: root
+  remote_user: root
   vars:
     # The Web Hook URL for the Alert Manager to send alerts to Rocket Chat
     # The default is #gpte-devops-prometheus channel on the Red Hat Chat instance
